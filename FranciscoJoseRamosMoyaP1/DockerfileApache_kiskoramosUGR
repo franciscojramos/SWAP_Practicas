@@ -1,0 +1,32 @@
+FROM ubuntu:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instalar Apache, PHP y herramientas avanzadas incluyendo monitoreo y logging
+RUN apt-get update && \
+    apt-get install -y apache2 php libapache2-mod-php php-mysql php-gd iputils-ping net-tools iptables nano htop curl vim && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Activar módulo rewrite (URLs amigables)
+RUN a2enmod rewrite
+
+# Aumentar límite de subida PHP (50 MB)
+RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 50M/' /etc/php/*/apache2/php.ini && \
+    sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php/*/apache2/php.ini
+
+# Personalizar logs de Apache: logs separados para acceso y error (útil para debugging)
+# Personalizar logs desde el VirtualHost directamente
+RUN sed -i '/ErrorLog/c\    ErrorLog ${APACHE_LOG_DIR}/mi_servidor_error.log' /etc/apache2/sites-available/000-default.conf && \
+    sed -i '/CustomLog/c\    CustomLog ${APACHE_LOG_DIR}/mi_servidor_acceso.log combined' /etc/apache2/sites-available/000-default.conf
+
+
+# (OPCIONAL) Confirmar que Apache prioriza index.php sobre index.html
+RUN sed -i 's/DirectoryIndex .*/DirectoryIndex index.php index.html/' /etc/apache2/mods-enabled/dir.conf
+
+
+# Exponer el puerto 80
+EXPOSE 80
+
+# Iniciar Apache en primer plano
+CMD ["apachectl", "-D", "FOREGROUND"]

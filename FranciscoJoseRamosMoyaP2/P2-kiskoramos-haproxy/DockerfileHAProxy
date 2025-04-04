@@ -1,0 +1,4 @@
+FROM haproxy:latest
+# Copiamos el archivo de configuración personalizado
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+EXPOSE 80 
