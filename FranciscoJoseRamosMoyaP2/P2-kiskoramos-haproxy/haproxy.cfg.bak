@@ -1,0 +1,39 @@
+global
+    log stdout format raw local0
+    daemon
+
+defaults
+    log     global
+    option  httplog
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+
+frontend http_front
+    bind *:80
+    mode http
+    acl stats_path path_beg /estadisticas_kiskoramos
+    use_backend stats_backend if stats_path
+    default_backend apache_servers
+    option http-server-close
+
+backend apache_servers
+    mode http
+    balance roundrobin
+    server web1 192.168.10.2:80 weight 3 check
+    server web2 192.168.10.3:80 weight 1 check
+    server web3 192.168.10.4:80 weight 3 check
+    server web4 192.168.10.5:80 weight 1 check
+    server web5 192.168.10.6:80 weight 3 check
+    server web6 192.168.10.7:80 weight 1 check
+    server web7 192.168.10.8:80 weight 3 check
+    server web8 192.168.10.9:80 weight 1 check
+
+
+backend stats_backend
+    mode http
+    stats enable
+    stats uri /estadisticas_kiskoramos
+    stats realm HAProxy\ Statistics
+    stats auth kiskoramos:kiskoramos
+

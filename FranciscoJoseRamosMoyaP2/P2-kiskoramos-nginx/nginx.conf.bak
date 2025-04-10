@@ -1,0 +1,31 @@
+events {}
+
+http {
+    upstream backend_web {
+        least_conn;
+        server 192.168.10.2;
+        server 192.168.10.3;
+        server 192.168.10.4;
+        server 192.168.10.5;
+        server 192.168.10.6;
+        server 192.168.10.7;
+        server 192.168.10.8;
+        server 192.168.10.9;
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://backend_web;
+        }
+
+        location /estadisticas_kiskoramos {
+            stub_status on;
+            allow all;
+        }
+
+        access_log /var/log/nginx/acceso_kiskoramos.log;
+        error_log /var/log/nginx/error_kiskoramos.log;
+    }
+}
