@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, make_response
 import requests
 import random
 
@@ -15,15 +15,20 @@ BACKENDS = [
     "http://192.168.10.8",
     "http://192.168.10.9",
 ]
-
+BACKENDS_SALUDABLES = BACKENDS.copy()
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def balancear(path):
-    backend = random.choice(BACKENDS)
+    global BACKENDS_SALUDABLES
+
+    if not BACKENDS_SALUDABLES:
+        BACKENDS_SALUDABLES = BACKENDS.copy()
+
+    backend = random.choice(BACKENDS_SALUDABLES)
     try:
         url = f"{backend}/{path}"
-        headers = {k: v for k, v in request.headers if k != 'Host'}
+        headers = {k: v for k, v in request.headers if k.lower() != "host"}
         resp = requests.request(
             method=request.method,
             url=url,
@@ -32,15 +37,14 @@ def balancear(path):
             cookies=request.cookies,
             allow_redirects=False,
         )
-        return Response(
-            resp.content,
-            status=resp.status_code,
-            headers=dict(resp.headers),
-            content_type=resp.headers.get("Content-Type", "text/html")
-        )
+        response = make_response(resp.content, resp.status_code)
+        response.headers["Content-Type"] = "text/html"
+        return response
 
     except Exception as e:
+        if backend in BACKENDS_SALUDABLES:
+            BACKENDS_SALUDABLES.remove(backend)
         return f"Error conectando con backend {backend}: {str(e)}", 502
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+        app.run(host="0.0.0.0", port=80)
