@@ -1,0 +1,7 @@
+# Ignorar claves privadas y certificados en cualquier subcarpeta
+*.key
+*.crt
+
+# Archivos de log, temporales, y basura
+*.log
+*.rnd
