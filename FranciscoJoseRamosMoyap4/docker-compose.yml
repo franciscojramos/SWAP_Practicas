@@ -1,0 +1,185 @@
+
+
+services:
+  web1:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web1
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.2
+      red_servicios:
+        ipv4_address: 192.168.20.2
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web2:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web2
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.3
+      red_servicios:
+        ipv4_address: 192.168.20.3
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web3:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web3
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.4
+      red_servicios:
+        ipv4_address: 192.168.20.4
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web4:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web4
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.5
+      red_servicios:
+        ipv4_address: 192.168.20.5
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web5:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web5
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.6
+      red_servicios:
+        ipv4_address: 192.168.20.6
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web6:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web6
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.7
+      red_servicios:
+        ipv4_address: 192.168.20.7
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web7:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web7
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.8
+      red_servicios:
+        ipv4_address: 192.168.20.8
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  web8:
+    build:
+      context: ./P4-kiskoramos-apache
+      dockerfile: DockerfileApacheP4
+    image: kiskoramos-apache-image:p4
+    container_name: web8
+    volumes:
+      - ./P4-web_kiskoramosUGR:/var/www/html:ro
+      - ./P4-kiskoramos-certificados:/etc/apache2/ssl:ro
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.9
+      red_servicios:
+        ipv4_address: 192.168.20.9
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+
+  balanceador-nginx:
+    build:
+      context: ./P4-kiskoramos-nginx
+      dockerfile: DockerfileNginxP4
+    image: kiskoramos-nginx-image:p4
+    container_name: balanceador-nginx
+    volumes:
+      - ./P4-kiskoramos-certificados:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web1
+      - web2
+      - web3
+      - web4
+      - web5
+      - web6
+      - web7
+      - web8
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.50
+    restart: unless-stopped
+
+
+networks:
+  red_web:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+  red_servicios:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.20.0/24
