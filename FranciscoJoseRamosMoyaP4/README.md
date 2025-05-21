@@ -1,6 +1,6 @@
 Práctica 4 - SWAP: Seguridad en Granja Web con IPTABLES y Docker
 Alumno: Francisco José Ramos Moya
-Usuario UGR: kiskoramos
+
 
 ✅ Tareas Básicas Completadas
 🟩 B1. Preparación del Entorno
