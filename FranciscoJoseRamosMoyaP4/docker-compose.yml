@@ -1,0 +1,146 @@
+
+services:
+  web1:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web1
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.2
+      red_servicios:
+        ipv4_address: 192.168.20.2
+
+  web2:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web2
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.3
+      red_servicios:
+        ipv4_address: 192.168.20.3
+
+  web3:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web3
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.4
+      red_servicios:
+        ipv4_address: 192.168.20.4
+
+  web4:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web4
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.5
+      red_servicios:
+        ipv4_address: 192.168.20.5
+
+  web5:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web5
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.6
+      red_servicios:
+        ipv4_address: 192.168.20.6
+
+  web6:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web6
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.7
+      red_servicios:
+        ipv4_address: 192.168.20.7
+
+  web7:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web7
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.8
+      red_servicios:
+        ipv4_address: 192.168.20.8
+
+  web8:
+    build:
+      context: ./p3-kiskoramos-apache
+      dockerfile: DockerfileApacheP3
+    image: kiskoramos-apache-image:p3
+    container_name: web8
+    volumes:
+      - ./web_kiskoramosUGR:/var/www/html
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.9
+      red_servicios:
+        ipv4_address: 192.168.20.9
+
+  nginx:
+    build:
+      context: ./p3-kiskoramos-nginx
+      dockerfile: DockerfileNginxP3
+    image: kiskoramos-nginx-image:p3
+    container_name: nginx
+    ports:
+      - "443:443"
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.10
+    depends_on:
+      - web1
+      - web2
+      - web3
+      - web4
+      - web5
+      - web6
+      - web7
+      - web8
+
+networks:
+  red_web:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+  red_servicios:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.20.0/24
