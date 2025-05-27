@@ -1,0 +1,25 @@
+FROM php:8.1-apache-bullseye
+
+# Instalamos iptables y herramientas útiles
+RUN apt update && apt install -y iptables iproute2 net-tools curl \
+    && apt clean
+
+# Copiar scripts desde subdirectorio iptables
+COPY P4-kiskoramos-iptables-web/entrypoint.sh /entrypoint.sh
+COPY P4-kiskoramos-iptables-web/kiskoramos-iptables-web.sh /kiskoramos-iptables-web.sh
+
+# Dar permisos de ejecución (especialmente importante en Windows)
+RUN chmod +x /entrypoint.sh /kiskoramos-iptables-web.sh
+
+
+# Activar módulo SSL y copiar la configuración
+RUN a2enmod ssl
+COPY kiskoramos-apache-ssl.conf /etc/apache2/sites-available/
+RUN a2ensite kiskoramos-apache-ssl.conf
+
+
+# Exponer puerto HTTP
+EXPOSE 80 443
+
+# Usar el script como punto de entrada
+ENTRYPOINT ["/entrypoint.sh"]
