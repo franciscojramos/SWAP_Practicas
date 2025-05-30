@@ -174,6 +174,53 @@ services:
 
     restart: unless-stopped
 
+  mariadb:
+    image: mariadb:10.5
+    container_name: db-wordpress
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppass
+    networks:
+      red_servicios:
+        ipv4_address: 192.168.20.100
+
+  wordpress1:
+    image: wordpress:latest
+    container_name: wp1
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      WORDPRESS_DB_HOST: 192.168.20.100
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppass
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.11
+      red_servicios:
+        ipv4_address: 192.168.20.11
+
+  wordpress2:
+    image: wordpress:latest
+    container_name: wp2
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      WORDPRESS_DB_HOST: 192.168.20.100
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppass
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.12
+      red_servicios:
+        ipv4_address: 192.168.20.12
+
 
 networks:
   red_web:
@@ -186,3 +233,5 @@ networks:
     ipam:
       config:
         - subnet: 192.168.20.0/24
+
+  

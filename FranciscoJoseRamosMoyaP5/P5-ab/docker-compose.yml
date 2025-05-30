@@ -1,0 +1,19 @@
+
+services:
+  apache-benchmark-P5:
+    build:
+      context: .
+      dockerfile: DockerFileAB
+    image: kiskoramos-ab-image:p5
+    container_name: apache_benchmark-P5
+    # Comando para que el contenedor se mantenga en ejecución
+    command: ["sleep", "infinity"]
+
+    networks:
+      red_web:
+        ipv4_address: 192.168.10.60
+
+networks:
+  red_web:
+    external: true
+    name: p5-granjaweb_red_web
