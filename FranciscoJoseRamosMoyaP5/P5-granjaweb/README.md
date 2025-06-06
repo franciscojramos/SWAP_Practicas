@@ -1,86 +1,78 @@
-Práctica 4 - SWAP: Seguridad en Granja Web con IPTABLES y Docker
-Alumno: Francisco José Ramos Moya
 
+---
 
-✅ Tareas Básicas Completadas
-🟩 B1. Preparación del Entorno
-Estructura de carpetas clara y segmentada:
+## Parte B: Benchmarking de la Granja Web
 
-P4-kiskoramos-apache/
+### B1. Configuración del entorno de benchmarking
+- Directorios creados: P5-ab, P5-locust
+- Red red_web definida y reutilizada
+- Archivos heredados desde la Práctica 4
 
-P4-kiskoramos-nginx/
+### B2. Apache Benchmark (ab)
+- Se configuró un contenedor con apache2-utils
+- Pruebas sobre https://192.168.10.50 y http://192.168.10.50
+- Resultados comparativos:
 
-P4-web_kiskoramosUGR/
+| Protocolo | Tiempo total | Requests/sec | Fallos |
+|-----------|--------------|---------------|--------|
+| HTTP      | 5.68 s       | 1758.22       | 0      |
+| HTTPS     | 41.5 s       | 240.88        | 0      |
 
-P4-kiskoramos-certificados/
+HTTP fue aproximadamente 7 veces más rápido que HTTPS en entorno sin restricciones IPTABLES.
 
-Subcarpetas específicas para scripts IPTABLES (P4-kiskoramos-iptables-web/) dentro de Apache y Nginx.
+### B3. Pruebas con Locust
+- Nodo master y 6 workers distribuidos
+- Escenario configurado en locustfile.py
+- Acciones simuladas: navegación, login, comentarios, búsquedas
+- Métricas reales observadas: hasta 600 RPS y 0% errores en index.php
 
-🟩 B2. Script IPTABLES para Apache
-kiskoramos-iptables-web.sh configura:
+### B4. Pruebas de carga combinadas
+- Ejecutadas desde contenedores ab y locust
+- Balanceador Nginx dirigiendo tráfico a 8 contenedores Apache
+- Se analizaron cuellos de botella y latencias de respuesta
 
-Políticas DROP por defecto.
+### B5. Análisis de resultados
+- IPTABLES restrictivo de la Práctica 4 bloqueaba el tráfico de ab
+- Sin IPTABLES, ab y locust operaron sin errores
+- Se observó un impacto aproximado de 7 veces en rendimiento al comparar HTTP con HTTPS
 
-Permisos para tráfico loopback, ESTABLISHED, y conexiones desde el balanceador 192.168.10.50 a puertos 80 y 443.
+---
 
-Archivos ubicados y ejecutados correctamente dentro del contenedor.
+## Parte A: Ampliaciones Avanzadas
 
-🟩 B3. Integración de IPTABLES en Apache
-Modificado DockerfileApacheP4:
+### A1. Desarrollo de tareas avanzadas en Locust
+- locustfile.py ampliado con tareas simuladas de un CMS:
+  - GET /pagina.php?id=1
+  - POST /login.php, POST /comentario.php
+  - GET /buscar.php?q=nginx
+- Simulación de interacciones típicas aunque sin CMS real instalado
 
-Instala iptables
+### A2. Integración real de un CMS (WordPress)
+- Despliegue de contenedores wordpress-kiskoramos y db-kiskoramos
+- Conectados a las redes red_web y red_servicios respectivamente
+- Balanceador Nginx actualizado para redirigir tráfico al CMS
+- WordPress accesible a través del puerto 82 del balanceador
+- Verificadas operaciones de escritura y lectura en la base de datos
 
-Copia scripts IPTABLES
+---
 
-Configura entrypoint.sh como ENTRYPOINT
+## Conclusión
 
-Comprobado con iptables -L -n: reglas cargadas al arrancar.
+Esta práctica permitió evaluar el comportamiento y rendimiento de una infraestructura web dockerizada bajo diferentes niveles de carga, seguridad y realismo funcional. Se integraron herramientas de benchmarking, se observaron los efectos del cifrado SSL y las políticas de IPTABLES, y se desplegó un CMS real para validar operaciones completas de una aplicación web moderna.
 
-🟩 B4. Adaptación de docker-compose.yml
-Añadido cap_add: NET_ADMIN a todos los contenedores web y balanceador.
+---
 
-Montaje de certificados desde carpeta externa (P4-kiskoramos-certificados) por volumen.
+## Capturas y Resultados
 
-Imagenes apache:p4 y nginx:p4 generadas correctamente.
+Se han incluido en la memoria final capturas de Apache Benchmark, Locust, configuraciones relevantes y análisis gráfico de los resultados obtenidos.
 
-🟩 B5. Verificación y Pruebas
-curl desde host accede correctamente al balanceador (https://localhost).
+---
 
-Acceso directo a Apache (https://192.168.10.X) denegado (IPTABLES activas).
+## Archivos clave
 
-Reglas IPTABLES confirmadas dentro de contenedores (DROP, ESTABLISHED, 443 limitado a Nginx, etc.).
-
-Comprobación de políticas con iptables -L, salidas capturadas.
-
-🔐 Tareas Avanzadas Completadas
-🛡 A1. Políticas de Seguridad en el Balanceador
-Balanceador balanceador-nginx protegido con reglas IPTABLES:
-
-DROP por defecto.
-
-Protección contra escaneo de puertos (SYN-FIN, NULL, XMAS).
-
-Rechazo de patrones comunes de inyección (<script>, union select).
-
-Límite de conexiones concurrentes (connlimit).
-
-🛡 A2. Defensa Avanzada Contra DDoS
-Añadidas reglas con módulos recent y limit:
-
-Bloqueo de IPs con más de 20 conexiones en 10 segundos.
-
-Limitación de paquetes SYN a 5/segundo (protección SYN flood).
-
-Rechazo de paquetes fragmentados (-f).
-
-Comprobado que las reglas se aplican al iniciar el balanceador.
-
-🛡 A3. Simulación de Ataques
-Simulación de ataque DDoS con curl en bucle (500 peticiones paralelas): sistema estable, sin caídas.
-
-Acceso directo a Apache bloqueado (curl -k https://192.168.10.2 → timeout).
-
-Escaneo de puertos con nmap mostró puertos filtrados (opcional).
-
+- `locustfile.py`: Tareas simuladas de CMS
+- `ab_http_result.txt`, `ab_https_result.txt`: Resultados de ab
+- `docker-compose.yml`: En cada carpeta del proyecto
+- `kiskoramos-nginx.conf`: Configuración del balanceador con HTTP y HTTPS
 
 
